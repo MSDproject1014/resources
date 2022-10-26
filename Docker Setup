@@ -1,5 +1,3 @@
-**// MAKE SURE TO CHANGE IP TO WHATEVER YOURS IS //**
-
 // Create data service docker image "mccdata"
 docker build --tag mccdata:v1.0 .
 
@@ -17,6 +15,7 @@ docker network connect mccnetwork data
 docker network inspect mccnetwork
 
 // Start the auth service container, pass the env variable name and value pair
+**// MAKE SURE TO CHANGE IP TO WHATEVER YOURS IS //**
 docker run -d --name=auth -p 8081:8081 --env API_HOST=172.24.0.2:8080 mccauth:v1.0
 
 // Attach mccauth to mccnetwork
