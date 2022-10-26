@@ -1,0 +1,31 @@
+
+// Create data service docker image "mccdata"
+docker build --tag mccdata:v1.0 .
+
+// Create auth service docker image "mccauth"
+docker build --tag mccauth:v1.0 .
+
+// Create docker network "mccnetwork"
+docker network create mccnetwork
+
+// Attach mccdata to port 8080
+docker run -d --name data -p 8080:8080 mccdata:v1.0
+
+// Attach mccdata to mccnetwork
+docker network connect mccnetwork data
+docker network inspect mccnetwork
+
+// Start the auth service container, pass the env variable name and value pair
+docker run -d --name=auth -p 8081:8081 --env API_HOST=172.24.0.2:8080 mccauth:v1.0
+
+// Attach mccauth to mccnetwork
+docker network connect mccnetwork auth
+docker network inspect mccnetwork
+
+// Create react client docker image "mccreact"
+docker build --tag mccreact:v1.0 .
+
+// Attach react image to mccnetwork
+docker run --name react -d -p 3000:80 mccreact:v1.0 
+docker network connect mccnetwork react
+docker network inspect mccnetwork
