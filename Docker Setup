@@ -1,3 +1,4 @@
+**// MAKE SURE TO CHANGE IP TO WHATEVER YOURS IS //**
 
 // Create data service docker image "mccdata"
 docker build --tag mccdata:v1.0 .
