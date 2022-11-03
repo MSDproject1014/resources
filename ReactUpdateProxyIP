@@ -1,0 +1,17 @@
+cd ~
+cd ..
+cd ./home/osboxes/git/mcc-react
+
+dataIP=$(kubectl get service/mccdata -o jsonpath={.spec.clusterIP})
+authIP=$(kubectl get service/mccauth -o jsonpath={.spec.clusterIP})
+
+sed -i "15 s/.*/    proxy_pass http:\/\/$dataIP:8080;/" default.conf
+sed -i "23 s/.*/    proxy_pass http:\/\/$authIP:8081;/" default.conf
+
+sed -i "5 s/.*/    app.use(proxy('\/api', { target: 'http:\/\/$dataIP:8080\/' }));/" ./src/setupProxy.js
+sed -i "6 s/.*/    app.use(proxy('\/account', { target: 'http:\/\/$authIP:8081\/' }));/" ./src/setupProxy.js
+
+git add default.conf
+git add ./src/setupProxy.js
+git commit -m "Updated proxy IPs"
+git push origin main

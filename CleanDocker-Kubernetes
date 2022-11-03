@@ -1,0 +1,9 @@
+docker stop $(docker ps -aq)
+
+docker system prune -f -a
+
+docker rmi -f mccdata:v1.0 mccauth:v1.0 mccreact:v1.0
+
+kubectl delete --all services --namespace=default
+ 
+kubectl delete --all deployments --namespace=default
