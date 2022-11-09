@@ -1,0 +1,72 @@
+mccreact 
+14cd329aadf9 
+
+mccauth
+c4f429640cf0 
+
+mccdata
+01b6297f89aa
+
+
+172.17.0.3 - data
+172.17.0.6 - auth
+172.17.0.8 - react
+
+
+Run Jenkins
+java -jar jenkins.war --httpPort=9000
+
+http://localhost:9000/
+
+Setup Jenkins
+Global tool configuration
+-JDK - /usr/lib/jvm/java-11-openjdk-amd64
+-Git - /usr/bin/git
+-Gradle = 6.6.1 - Install Automatically
+
+
+
+Kubernetes
+
+Set up mccdata
+gradle clean build
+gradle bootJar
+docker build --rm -t mccdata:v1.0 .
+docker run -d --rm --name mccdata -p 8080:8080 mccdata:v1.0
+sudo -i
+kubectl create deployment mccdata --image=mccdata:v1.0
+kubectl expose deployment mccdata --type=LoadBalancer --port=8080
+
+
+set up mccauth
+gradle clean build
+gradle bootJar
+docker build --rm -t mccauth:v1.0 .
+docker run -d --rm --name mccauth -p 8081:8081 mccauth:v1.0
+sudo -i
+kubectl create deployment mccauth --image=mccauth:v1.0
+kubectl set env deployment/mccauth API_HOST=<data cluster ip>:8080
+kubectl expose deployment mccauth --type=LoadBalancer --port=8081
+
+set up mccreact
+Update default.conf
+update setupProxy.js
+
+npm install
+docker build --rm -t mccreact:v1.0 .
+docker run -d --rm --name mccreact -p 3000:3000 mccreact:v1.0
+sudo -i
+kubectl create deployment mccreact --image=mccreact:v1.0
+kubectl expose deployment mccreact --type=LoadBalancer --port=80
+
+Describe deployemnt
+kubectl describe deployment <deployment name>
+
+Get Logs
+kubectl logs <pod name>
+
+minikube service list
+
+Filter search
+kubernetes.pod_name is <pod name>
+
